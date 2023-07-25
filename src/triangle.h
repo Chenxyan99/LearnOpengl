@@ -3,4 +3,4 @@
 
 #include <iostream>
 
-void triangleShader(unsigned int& shaderProgramO, unsigned int& shaderProgramY);
+void triangleShader(unsigned int& shaderProgramO, unsigned int& shaderProgramY, unsigned int &shaderProgramG);

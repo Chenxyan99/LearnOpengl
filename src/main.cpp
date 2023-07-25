@@ -1,8 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "triangle.h"
+#include "shader_s.h"
 
 #include <iostream>
+#include <math.h>
+#include <stdio.h>
+#include <direct.h>
 
 // 测试代码
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -24,6 +27,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // 初始化GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -33,61 +37,27 @@ int main()
     }
 
     // 初始化渲染窗口
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    unsigned int shaderProgramO, shaderProgramY;
-    triangleShader(shaderProgramO, shaderProgramY);
+    Shader ourShader("./src/shaders/vShader.vs", "./src/shaders/fShader.fs");
 
-    // 设置顶点
-    // float vertices[] = {
-    //     0.5f, 0.5f, 0.0f,   // 右上角
-    //     0.5f, -0.5f, 0.0f,  // 右下角
-    //     -0.5f, -0.5f, 0.0f, // 左下角
-    //     -0.5f, 0.5f, 0.0f   // 左上角
-    // };
-
-    // unsigned int indices[] = {
-    //     0, 1, 3, // 第一个三角形
-    //     1, 2, 3  // 第二个三角形
-    // };
-
-    float t1[] = {
-        -0.5f, 0.5f, 0.0f,  // top
-        0.0f, 0.0f, 0.0f,   // right
-        -0.5f, -0.5f, 0.0f, // bottom
+    float vertices[] = {
+        // positions         // colors
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // top
     };
 
-    float t2[] = {
-        0.5f, 0.5f, 0.0f,  // top
-        0.0f, 0.0f, 0.0f,  // right
-        0.5f, -0.5f, 0.0f, // bottom
-    };
+    unsigned int VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
 
-    unsigned int VAO[2], VBO[2], EBO;
-    glGenVertexArrays(2, VAO);
-    glGenBuffers(2, VBO);
-    // glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(t1), t1, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(t2), t2, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    // 复制索引数组进索引缓冲
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // 设置顶点属性指针
-
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
-
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     // 线框模式/填充模式
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -101,20 +71,18 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // 三角形绘制
-        glUseProgram(shaderProgramO);
-        glBindVertexArray(VAO[0]);
+        // 三角形渲染
+        ourShader.use();
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glUseProgram(shaderProgramY);
-        glBindVertexArray(VAO[1]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // 检查并调用事件，交换缓冲
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+
     glfwTerminate();
 
     return 0;
