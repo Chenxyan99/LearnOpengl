@@ -1,5 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <stb_image.h>
 #include <shader_s.h>
 
@@ -49,11 +54,11 @@ int main()
     // };
 
     float vertices[] = {
-        //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // 右上
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右下
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上
+        //     ---- 位置 ----       - 纹理坐标 -
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,   // 右上
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // 右下
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // 左下
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f   // 左上
     };
     unsigned int indices[] = {
         0, 1, 3, // first triangle
@@ -74,25 +79,22 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // 位置
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    // 颜色
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
     // 纹理坐标
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // 加载并创建纹理
     unsigned int texture1, texture2;
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
     // 设置纹理环绕参数
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // 设置纹理过滤参数
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
@@ -115,8 +117,8 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     data = stbi_load("./textures/awesomeface.png", &width, &height, &nrChannels, 0);
     if (data)
@@ -131,7 +133,7 @@ int main()
     stbi_image_free(data);
 
     ourShader.use();
-    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
+    ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
     // 线框模式/填充模式
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -151,12 +153,25 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-
         ourShader.setFloat("alpha", alpha);
-        // 三角形渲染
-        ourShader.use();
+
+        // 变换1
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, -1.0f));
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // 变换2 
+        transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
+        float scaleAmount = static_cast<float>(abs(sin(glfwGetTime())));
+        transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &transform[0][0]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         // 检查并调用事件，交换缓冲
         glfwSwapBuffers(window);
@@ -184,7 +199,7 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
         alpha += 0.001f;
-        if(alpha >= 1.0f)
+        if (alpha >= 1.0f)
             alpha = 1.0f;
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
