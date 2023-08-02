@@ -77,4 +77,4 @@ src/main.o: src/main.cpp include/glad/glad.h include/KHR/khrplatform.h \
  include/glm/gtc/../gtc/quaternion.hpp \
  include/glm/gtc/../gtc/quaternion.inl \
  include/glm/gtc/../gtc/quaternion_simd.inl include/glm/gtc/type_ptr.inl \
- include/stb_image.h include/shader_s.h
+ include/stb_image.h include/shader_s.h include/camera.h
