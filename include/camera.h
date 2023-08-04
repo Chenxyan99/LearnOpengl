@@ -70,13 +70,17 @@ public:
     {
         float velocity = MovementSpeed * deltaTime;
         if (direction == FORWARD)
-            Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;
+            // Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;
+            Position += Front * velocity;
         if (direction == BACKWARD)
-            Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity;
+            // Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity;
+            Position -= Front * velocity;
         if (direction == LEFT)
-            Position -= glm::normalize(glm::cross(Front, Up)) * velocity;
+            // Position -= glm::normalize(glm::cross(Front, Up)) * velocity;
+            Position -= Right * velocity;
         if (direction == RIGHT)
-            Position += glm::normalize(glm::cross(Front, Up)) * velocity;
+            // Position += glm::normalize(glm::cross(Front, Up)) * velocity;
+            Position += Right * velocity;
     }
 
     // 鼠标输入处理

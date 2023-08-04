@@ -1,17 +1,17 @@
-src/main.o: src/main.cpp include/glad/glad.h include/KHR/khrplatform.h \
- include/GLFW/glfw3.h include/glm/glm.hpp include/glm/detail/_fixes.hpp \
- include/glm/fwd.hpp include/glm/detail/type_int.hpp \
- include/glm/detail/setup.hpp include/glm/detail/../simd/platform.h \
- include/glm/detail/type_float.hpp include/glm/detail/type_vec.hpp \
- include/glm/detail/precision.hpp include/glm/detail/type_mat.hpp \
- include/glm/vec2.hpp include/glm/detail/type_vec2.hpp \
- include/glm/detail/type_vec2.inl include/glm/vec3.hpp \
- include/glm/detail/type_vec3.hpp include/glm/detail/type_vec3.inl \
- include/glm/vec4.hpp include/glm/detail/type_vec4.hpp \
- include/glm/detail/type_vec4.inl include/glm/detail/type_vec4_simd.inl \
- include/glm/mat2x2.hpp include/glm/detail/type_mat2x2.hpp \
- include/glm/detail/type_mat2x2.inl include/glm/detail/func_matrix.hpp \
- include/glm/detail/../mat2x3.hpp \
+src/main.o: src/main.cpp src/./chapter2/chapter2.cpp include/glad/glad.h \
+ include/KHR/khrplatform.h include/GLFW/glfw3.h include/glm/glm.hpp \
+ include/glm/detail/_fixes.hpp include/glm/fwd.hpp \
+ include/glm/detail/type_int.hpp include/glm/detail/setup.hpp \
+ include/glm/detail/../simd/platform.h include/glm/detail/type_float.hpp \
+ include/glm/detail/type_vec.hpp include/glm/detail/precision.hpp \
+ include/glm/detail/type_mat.hpp include/glm/vec2.hpp \
+ include/glm/detail/type_vec2.hpp include/glm/detail/type_vec2.inl \
+ include/glm/vec3.hpp include/glm/detail/type_vec3.hpp \
+ include/glm/detail/type_vec3.inl include/glm/vec4.hpp \
+ include/glm/detail/type_vec4.hpp include/glm/detail/type_vec4.inl \
+ include/glm/detail/type_vec4_simd.inl include/glm/mat2x2.hpp \
+ include/glm/detail/type_mat2x2.hpp include/glm/detail/type_mat2x2.inl \
+ include/glm/detail/func_matrix.hpp include/glm/detail/../mat2x3.hpp \
  include/glm/detail/../detail/type_mat2x3.hpp \
  include/glm/detail/../detail/type_mat2x3.inl \
  include/glm/detail/../mat2x4.hpp \
@@ -77,4 +77,4 @@ src/main.o: src/main.cpp include/glad/glad.h include/KHR/khrplatform.h \
  include/glm/gtc/../gtc/quaternion.hpp \
  include/glm/gtc/../gtc/quaternion.inl \
  include/glm/gtc/../gtc/quaternion_simd.inl include/glm/gtc/type_ptr.inl \
- include/stb_image.h include/shader_s.h include/camera.h
+ include/shader_s.h include/camera.h
