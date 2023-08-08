@@ -1,6 +1,6 @@
 src/main.o: src/main.cpp src/./chapter2/chapter2.cpp include/glad/glad.h \
- include/KHR/khrplatform.h include/GLFW/glfw3.h include/glm/glm.hpp \
- include/glm/detail/_fixes.hpp include/glm/fwd.hpp \
+ include/KHR/khrplatform.h include/GLFW/glfw3.h include/stb_image.h \
+ include/glm/glm.hpp include/glm/detail/_fixes.hpp include/glm/fwd.hpp \
  include/glm/detail/type_int.hpp include/glm/detail/setup.hpp \
  include/glm/detail/../simd/platform.h include/glm/detail/type_float.hpp \
  include/glm/detail/type_vec.hpp include/glm/detail/precision.hpp \
